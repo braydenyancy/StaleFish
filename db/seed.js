@@ -27,6 +27,14 @@ async function createTables() {
         title VARCHAR(255),
         description VARCHAR(255)
       );
+      CREATE TABLE users (
+          id SERIAL PRIMARY KEY,
+          username varchar(255) UNIQUE NOT NULL,
+          password varchar(255) NOT NULL,
+          name varchar(255) NOT NULL,
+          location varchar (255) NOT NULL,
+          active boolean DEFAULT true
+      );
     `)
     
     console.log('Finished Creating Tables')
