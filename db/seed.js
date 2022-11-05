@@ -1,6 +1,7 @@
 const { client } = require('./')
 
 const { createProduct } = require('./products')
+const { createUser } = require('./users')
 
 async function dropTables() {
   try {
@@ -27,14 +28,13 @@ async function createTables() {
         title VARCHAR(255),
         description VARCHAR(255),
         type VARCHAR(255), 
-        price MONEY,
+        price MONEY NOT NULL,
       );
       CREATE TABLE users (
           id SERIAL PRIMARY KEY,
           username VARCHAR(255) UNIQUE NOT NULL,
           password VARCHAR(255) NOT NULL,
           name VARCHAR(255) NOT NULL,
-          location VARCHAR (255) NOT NULL,
           birthday DATE NOT NULL, 
           address VARCHAR(255) NOT NULL, 
           active boolean DEFAULT true
@@ -92,6 +92,23 @@ async function createInitialProducts() {
   }
 }
 
+async function createInitialUsers() {
+  console.log("Creating initial users...")
+  try {
+    const usersToCreate = [
+      { username: "albert", password: "bertie99", name: "Albert",  birthday: 11052022, address: "testLocation1"},
+      { username: "sandra", password: "sandra123", name:"Sandra", birthday: 11062022, address: "testLocation2"},
+      { username: "glamgal", password: "glamgal123", name:"Glamgal", birthday: 11072022, address:"testLocation3" },
+    ]
+    const users = await Promise.all(usersToCreate.map(createUser))
+    console.log("Users created:")
+    console.log(users)
+    console.log("Finished creating intial users")
+  } catch(error) {
+    console.error("Error creating initial users")
+    throw error
+  }
+}
 async function buildDB() {
   try {
     // need to add something here
@@ -99,9 +116,11 @@ async function buildDB() {
     await dropTables();
     await createTables();
     await createInitialProducts();
+    await createInitialUsers();
   }
   catch(ex) {
     console.log('Error building the DB')
+    throw ex;
   }
 }
 
