@@ -8,9 +8,10 @@ async function createUser ({username, password, name,  birthday, address}) {
         ON CONFLICT (username) DO NOTHING
         RETURNING *;
         `, [username, password, name, birthday, address])
+        return user;
     }
-    catch (ex) {
-        console.log("Error with createUser function")
+    catch (error) {
+        throw error
     }
 }
 

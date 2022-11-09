@@ -62,29 +62,43 @@ async function createTables() {
 async function createInitialProducts() {
   try {
     console.log('Creating Products')
-    await createProduct({
+    const product1 = await createProduct({
       title:
         "The first most amazing product",
       description:
         "Description for the first most amazing product ever....",
+      type:
+        "Product Type 1",
+      price:
+        "$100"
 
     });
 
-    await createProduct({
+    const product2 = await createProduct({
       title:
         "The second most amazing product",
       description:
-        "Description for the second most amazing product ever...."
+        "Description for the second most amazing product ever....",
+      type:
+        "Product Type 2",
+      price:
+        "$200"
     });
 
-    await createProduct({
+    const product3 = await createProduct({
       title:
         "The third most amazing product",
       description:
-        "Description for the third most amazing product ever...."
+        "Description for the third most amazing product ever....",
+      type:
+        "Product Type 3",
+      price:
+        "$300"
     });
 
     console.log('Finished creating Products')
+    console.log("Products created:")
+    console.log(product1, product2, product3)
   }
   catch (error) {
     console.error('error creating Products')
@@ -95,9 +109,9 @@ async function createInitialUsers() {
   console.log("Creating initial users...")
   try {
     const usersToCreate = [
-      { username: "albert", password: "bertie99", name: "Albert", birthday: 11052022, address: "testLocation1" },
-      { username: "sandra", password: "sandra123", name: "Sandra", birthday: 11062022, address: "testLocation2" },
-      { username: "glamgal", password: "glamgal123", name: "Glamgal", birthday: 11072022, address: "testLocation3" },
+      { username: "albert", password: "bertie99", name: "Albert", birthday: "05-11-2022", address: "testLocation1" },
+      { username: "sandra", password: "sandra123", name: "Sandra", birthday: "06-11-2022", address: "testLocation2" },
+      { username: "glamgal", password: "glamgal123", name: "Glamgal", birthday: "07-11-2022", address: "testLocation3" },
     ]
     const users = await Promise.all(usersToCreate.map(createUser))
     console.log("Users created:")

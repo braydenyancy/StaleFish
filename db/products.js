@@ -10,8 +10,8 @@ async function createProduct({title, description, type,  price}) {
     
     return product;
   }
-  catch(ex) {
-    console.log('error in createProduct adapter function')
+  catch(error) {
+    throw error
   }
 }
 
