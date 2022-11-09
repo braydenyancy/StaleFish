@@ -38,13 +38,13 @@ async function createTables() {
         title varchar(255) NOT NULL,
         description TEXT NOT NULL, 
         type varchar(255) NOT NULL,
-        price MONEY NOT NULL
+        price DECIMAL(19,3) NOT NULL
       );
       CREATE TABLE orders (
         id SERIAL PRIMARY KEY,
         name varchar(255) NOT NULL,
         address varchar(255) NOT NULL, 
-        price MONEY NOT NULL
+        price DECIMAL(19,3) NOT NULL
         );
       CREATE TABLE reviews (
         id SERIAL PRIMARY KEY,
@@ -73,7 +73,7 @@ async function createInitialProducts() {
       type:
         "Product Type 1",
       price:
-        "$100"
+        100
 
     });
 
@@ -85,7 +85,7 @@ async function createInitialProducts() {
       type:
         "Product Type 2",
       price:
-        "$200"
+        200
     });
 
     const product3 = await createProduct({
@@ -96,7 +96,7 @@ async function createInitialProducts() {
       type:
         "Product Type 3",
       price:
-        "$300"
+        300
     });
 
     console.log('Finished creating Products')
