@@ -10,6 +10,7 @@ async function dropTables() {
   await client.query(`
     DROP TABLE IF EXISTS reviews;
     DROP TABLE IF EXISTS orders;
+    DROP TABLE IF EXISTS cart;
     DROP TABLE IF EXISTS products;
     DROP TABLE IF EXISTS users;
     `);
@@ -30,6 +31,7 @@ async function createTables() {
         password varchar(255) NOT NULL,
         name varchar(255) NOT NULL,
         birthday DATE NOT NULL,
+        cart integer ARRAY,
         address varchar(255) NOT NULL,
         active boolean DEFAULT true
       );
@@ -39,6 +41,10 @@ async function createTables() {
         description TEXT NOT NULL, 
         type varchar(255) NOT NULL,
         price DECIMAL(19,3) NOT NULL
+      );
+      CREATE TABLE cart (
+        "userId" INTEGER REFERENCES users(id),
+        "productIds" INTEGER ARRAY
       );
       CREATE TABLE orders (
         id SERIAL PRIMARY KEY,
@@ -55,7 +61,7 @@ async function createTables() {
         "productId" INTEGER REFERENCES products(id)
       );  
   `);
-
+        
     console.log("Finished building tables!")
   } catch (error) {
     console.error("Error building tables!")
