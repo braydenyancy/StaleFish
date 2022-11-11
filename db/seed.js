@@ -10,7 +10,7 @@ async function dropTables() {
   await client.query(`
     DROP TABLE IF EXISTS reviews;
     DROP TABLE IF EXISTS orders;
-    DROP TABLE IF EXISTS cart;
+    DROP TABLE IF EXISTS carts;
     DROP TABLE IF EXISTS products;
     DROP TABLE IF EXISTS users;
     `);
@@ -42,7 +42,8 @@ async function createTables() {
         type varchar(255) NOT NULL,
         price DECIMAL(19,3) NOT NULL
       );
-      CREATE TABLE cart (
+      CREATE TABLE carts (
+        id SERIAL PRIMARY KEY,
         "userId" INTEGER REFERENCES users(id),
         "productIds" INTEGER ARRAY
       );
