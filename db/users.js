@@ -28,6 +28,25 @@ async function addToCart (productId) {
     }
 }
 
+async function getUserById(userId) {
+  
+    try {
+      
+      const { rows: [user] } = await client.query(`
+        SELECT id, username
+        FROM users
+        WHERE id=${userId}`);
+      
+      if (!user) {
+        return null
+      }
+      
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 // async function addtoUserCart(users) {
 //     try{
 //         const 
@@ -36,4 +55,4 @@ async function addToCart (productId) {
 //     }
 // }
 
-module.exports = {createUser, addToCart}
+module.exports = {createUser, addToCart, getUserById}
