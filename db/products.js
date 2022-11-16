@@ -21,11 +21,11 @@ async function getAllProducts() {
       SELECT id
       FROM products; 
     `);
-
+    console.log(productID)
     const products = await Promise.all(productID.map(
       product => getProductById(product.id)
     ));
-    return products
+    return products;
   } catch (error) {
     throw error
   }
@@ -57,5 +57,5 @@ async function getProductById(id) {
 module.exports = {
   createProduct,
   getProductById,
-  getAllProducts,
+  getAllProducts
 }

@@ -1,13 +1,17 @@
 const { client } = require('./');
+const bcrypt = require('bcrypt');
 
-async function createUser ({username, password, name,  birthday, address}) {
+async function createUser ({username, password, birthday, admin}) {
     try {
+
+        const SALT_COUNT = 10;
+        const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
         const { rows: [ user ] } = await client.query(`
-        INSERT INTO users(username, password, name, birthday, address)
-        VALUES($1, $2, $3, $4, $5)
+        INSERT INTO users(username, password, birthday, admin)
+        VALUES($1, $2, $3, $4)
         ON CONFLICT (username) DO NOTHING
-        RETURNING *;
-        `, [username, password, name, birthday, address])
+        RETURNING id, username, birthday, admin;
+        `, [username, hashedPassword, birthday, admin])
         return user;
     }
     catch (error) {
@@ -47,6 +51,21 @@ async function getUserById(userId) {
     }
   }
 
+  async function getUserByUsername(username) {
+  
+    try {
+      
+      const { rows: [user] } = await client.query(`
+        SELECT *
+        FROM users
+        WHERE username=$1;`, [username]);
+      
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 // async function addtoUserCart(users) {
 //     try{
 //         const 
@@ -55,4 +74,4 @@ async function getUserById(userId) {
 //     }
 // }
 
-module.exports = {createUser, addToCart, getUserById}
+module.exports = {createUser, addToCart, getUserById, getUserByUsername}

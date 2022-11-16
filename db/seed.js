@@ -29,11 +29,10 @@ async function createTables() {
         id SERIAL PRIMARY KEY,
         username varchar(255) UNIQUE NOT NULL,
         password varchar(255) NOT NULL,
-        name varchar(255) NOT NULL,
         birthday DATE NOT NULL,
         cart integer ARRAY,
-        address varchar(255) NOT NULL,
-        active boolean DEFAULT true
+        active boolean DEFAULT TRUE,
+        admin boolean DEFAULT FALSE
       );
       CREATE TABLE products (
         id SERIAL PRIMARY KEY,
@@ -119,9 +118,11 @@ async function createInitialUsers() {
   console.log("Creating initial users...")
   try {
     const usersToCreate = [
-      { username: "albert", password: "bertie99", name: "Albert", birthday: "05-11-2022", address: "testLocation1" },
-      { username: "sandra", password: "sandra123", name: "Sandra", birthday: "06-11-2022", address: "testLocation2" },
-      { username: "glamgal", password: "glamgal123", name: "Glamgal", birthday: "07-11-2022", address: "testLocation3" },
+      { username: "sean", password: "seanpassword",  birthday: "09-21-1993",  admin: "true" },
+      { username: "gary", password: "garypassword",  birthday: "06-11-2022",  admin: "true" },
+      { username: "grant", password: "grantpassword",  birthday: "07-11-2022",  admin: "true" },
+      { username: "wes", password: "wespassword",  birthday: "07-11-2022",  admin: "true" },
+      { username: "brayden", password: "braydenpassword",  birthday: "07-11-2022",  admin: "true" }
     ]
     const users = await Promise.all(usersToCreate.map(createUser))
     console.log("Users created:")

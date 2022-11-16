@@ -1,0 +1,9 @@
+
+
+Database/cart.js -- display users cart array for each user !!!
+cartRouter.js !!
+GET users/cart route!
+
+
+
+for sorting by type --- filter for product.type
