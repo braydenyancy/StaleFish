@@ -55,6 +55,15 @@ apiRouter.use((req, res, next) => {
 const productsRouter = require('./productsRouter');
 apiRouter.use('/products', productsRouter);
 
+const reviewsRouter = require('./reviewsRouter');
+apiRouter.use('/reviews', reviewsRouter);
+
+const usersRouter = require('./usersRouter');
+apiRouter.use('/users', usersRouter);
+
+const cartRouter = require('./cartRouter');
+apiRouter.use('/cart', cartRouter);
+
 
 apiRouter.use((error, req, res, next) => {
     res.send({

@@ -1,0 +1,14 @@
+
+
+deleteProduct DB !!!
+deleteReview DB !!!
+deleteCart DB !!!
+finish productRouter
+finish cartRouter
+finish reviewsRouter
+
+
+
+
+
+for sorting by type --- filter for product.type

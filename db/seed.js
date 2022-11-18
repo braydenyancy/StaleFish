@@ -3,6 +3,7 @@ const { client } = require('./')
 const { createProduct, getAllProducts, getProductById } = require('./products')
 const { createUser } = require('./users')
 const { createReview } = require('./reviews')
+const { createCart, addToCart, getCartById, removeFromCart } = require('./cart')
 
 async function dropTables() {
   console.log("Dropping All Tables...")
@@ -10,7 +11,7 @@ async function dropTables() {
   await client.query(`
     DROP TABLE IF EXISTS reviews;
     DROP TABLE IF EXISTS orders;
-    DROP TABLE IF EXISTS cart;
+    DROP TABLE IF EXISTS carts;
     DROP TABLE IF EXISTS products;
     DROP TABLE IF EXISTS users;
     `);
@@ -29,11 +30,10 @@ async function createTables() {
         id SERIAL PRIMARY KEY,
         username varchar(255) UNIQUE NOT NULL,
         password varchar(255) NOT NULL,
-        name varchar(255) NOT NULL,
         birthday DATE NOT NULL,
         cart integer ARRAY,
-        address varchar(255) NOT NULL,
-        active boolean DEFAULT true
+        active boolean DEFAULT TRUE,
+        admin boolean DEFAULT FALSE
       );
       CREATE TABLE products (
         id SERIAL PRIMARY KEY,
@@ -42,7 +42,8 @@ async function createTables() {
         type varchar(255) NOT NULL,
         price DECIMAL(19,3) NOT NULL
       );
-      CREATE TABLE cart (
+      CREATE TABLE carts (
+        id SERIAL PRIMARY KEY,
         "userId" INTEGER REFERENCES users(id),
         "productIds" INTEGER ARRAY
       );
@@ -61,7 +62,7 @@ async function createTables() {
         "productId" INTEGER REFERENCES products(id)
       );  
   `);
-        
+
     console.log("Finished building tables!")
   } catch (error) {
     console.error("Error building tables!")
@@ -118,9 +119,11 @@ async function createInitialUsers() {
   console.log("Creating initial users...")
   try {
     const usersToCreate = [
-      { username: "albert", password: "bertie99", name: "Albert", birthday: "05-11-2022", address: "testLocation1" },
-      { username: "sandra", password: "sandra123", name: "Sandra", birthday: "06-11-2022", address: "testLocation2" },
-      { username: "glamgal", password: "glamgal123", name: "Glamgal", birthday: "07-11-2022", address: "testLocation3" },
+      { username: "sean", password: "seanpassword", birthday: "09-21-1993", admin: "true" },
+      { username: "gary", password: "garypassword", birthday: "06-11-2022", admin: "true" },
+      { username: "grant", password: "grantpassword", birthday: "07-11-2022", admin: "true" },
+      { username: "wes", password: "wespassword", birthday: "07-11-2022", admin: "true" },
+      { username: "brayden", password: "braydenpassword", birthday: "07-11-2022", admin: "true" }
     ]
     const users = await Promise.all(usersToCreate.map(createUser))
     console.log("Users created:")
@@ -162,6 +165,57 @@ async function createInitialReviews() {
     throw error
   }
 }
+
+async function createInitialCarts() {
+  console.log("Creating initial carts...")
+  try {
+    const cartOne = await createCart(2, [1])
+    const cartTwo = await createCart(1, [2])
+    const cartThree = await createCart(3, [3])
+    const cartFour = await createCart(null, [1])
+    console.log(cartOne, cartTwo, cartThree, cartFour)
+  } catch (error) {
+    throw error
+  }
+}
+
+async function testAddToCart () {
+  console.log("Testing add to cart function...")
+  try {
+  //  const test1 =  await getCartById(2)
+  //  console.log("First test:", test1)
+    const newTestCart = await addToCart(2, 3)
+    const anotherNewTestCart = await addToCart(2, 4)
+    // const test2 =  await getCartById(2)
+    // console.log("Second test:", test2)
+    // console.log(newTestCart)
+    console.log(newTestCart)
+    console.log(anotherNewTestCart)
+  }catch (error) {
+    throw error
+  }
+}
+
+async function testRemoveFromCart () {
+  console.log("Testing remove from cart function...")
+  try {
+  //  const test1 =  await getCartById(2)
+  //  console.log("First test:", test1)
+    const newTestCart = await addToCart(2, 3)
+    console.log("Test products added:", newTestCart)
+    const newTestCartRemove = await removeFromCart(2, 3)
+    console.log("Test products removed:", newTestCartRemove)
+    // const anotherNewTestCart = await addToCart(2, 4)
+    // const test2 =  await getCartById(2)
+    // console.log("Second test:", test2)
+    // console.log(newTestCart)
+    // console.log(newTestCart)
+    // console.log(anotherNewTestCart)
+  }catch (error) {
+    throw error
+  }
+}
+
 async function buildDB() {
   try {
     // need to add something here
@@ -171,6 +225,9 @@ async function buildDB() {
     await createInitialProducts();
     await createInitialUsers();
     await createInitialReviews();
+    await createInitialCarts();
+    await testAddToCart();
+    await testRemoveFromCart();
   }
   catch (ex) {
     console.log('Error building the DB')
