@@ -1,8 +1,13 @@
 
 
-Database/cart.js -- display users cart array for each user !!!
-cartRouter.js !!
-GET users/cart route!
+deleteProduct DB !!!
+deleteReview DB !!!
+deleteCart DB !!!
+finish productRouter
+finish cartRouter
+finish reviewsRouter
+
+
 
 
 
