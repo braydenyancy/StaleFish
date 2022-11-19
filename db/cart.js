@@ -30,13 +30,13 @@ async function createCart(userId, productIds) {
 
 //if creating a cart without a user, set cart.userId to null
 
-async function getCartById(userId) {
+async function getCartById(id) {
   try {
     const { rows: [cart] } = await client.query(`
         SELECT *
         FROM carts
-        WHERE "userId"=$1;
-      `, [userId]);
+        WHERE id=$1;
+      `, [id]);
 
     if (!cart) {
       throw {
@@ -49,6 +49,22 @@ async function getCartById(userId) {
     return cart;
   } catch (error) {
     throw error;
+  }
+}
+
+async function getAllCarts() {
+  try {
+    const { rows: cartID } = await client.query(`
+      SELECT id
+      FROM carts; 
+    `);
+    const carts = await Promise.all(cartID.map(
+      cart => getCartById(cart.id)
+    ));
+    // console.log(carts)
+    return carts;
+  } catch (error) {
+    throw error
   }
 }
 
@@ -97,4 +113,20 @@ async function removeFromCart(userId, newProductId) {
     }
   }
 }
-module.exports = { createCart, getCartById, addToCart, removeFromCart }
+
+async function destroyCart(id) {
+  try {
+
+    const { rows } = await client.query(`
+    DELETE from carts
+    WHERE id=$1
+    RETURNING *;
+  `, [id]);
+    
+    return rows;
+  } catch (error) {
+    throw error
+  }
+}
+
+module.exports = { createCart, getCartById, getAllCarts, destroyCart, addToCart, removeFromCart }

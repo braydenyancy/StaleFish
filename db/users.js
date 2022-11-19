@@ -37,7 +37,7 @@ async function getUserById(userId) {
     try {
       
       const { rows: [user] } = await client.query(`
-        SELECT id, username
+        SELECT id, username, admin
         FROM users
         WHERE id=${userId}`);
       

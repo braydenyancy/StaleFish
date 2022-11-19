@@ -1,9 +1,9 @@
 const { client } = require('./')
 
-const { createProduct, getAllProducts, getProductById } = require('./products')
+const { createProduct, getAllProducts, getProductById, destroyProduct } = require('./products')
 const { createUser } = require('./users')
-const { createReview } = require('./reviews')
-const { createCart, addToCart, getCartById, removeFromCart } = require('./cart')
+const { createReview, getReviewById, getAllReviews, destroyReview } = require('./reviews')
+const { createCart, addToCart, getCartById, removeFromCart, getAllCarts, destroyCart } = require('./cart')
 
 async function dropTables() {
   console.log("Dropping All Tables...")
@@ -115,6 +115,39 @@ async function createInitialProducts() {
   }
 }
 
+async function testDeleteProduct() {
+  try{
+    console.log('Creating Test Products for deletion:')
+    const testProduct1 = await createProduct({
+      title:
+        "The first most amazing test product",
+      description:
+        "Description for the first most amazing product ever....",
+      type:
+        "Product Type 1",
+      price:
+        100
+
+    });
+
+    const testProduct2 = await createProduct({
+      title:
+        "The second most amazing test product",
+      description:
+        "Description for the second most amazing product ever....",
+      type:
+        "Product Type 2",
+      price:
+        200
+    });
+    console.log("Grabbing products before deletion:", await getAllProducts())
+    await destroyProduct(5)
+    console.log("Grabbing products after deletion:", await getAllProducts())
+  } catch(error){
+    throw error
+  }
+}
+
 async function createInitialUsers() {
   console.log("Creating initial users...")
   try {
@@ -166,6 +199,17 @@ async function createInitialReviews() {
   }
 }
 
+async function testDeleteReview() {
+  try{
+
+    console.log("Grabbing reviews before deletion:", await getAllReviews())
+    await destroyReview(3)
+    console.log("Grabbing reviews after deletion:", await getAllReviews())
+  } catch(error){
+    throw error
+  }
+}
+
 async function createInitialCarts() {
   console.log("Creating initial carts...")
   try {
@@ -178,6 +222,7 @@ async function createInitialCarts() {
     throw error
   }
 }
+
 
 async function testAddToCart () {
   console.log("Testing add to cart function...")
@@ -216,6 +261,16 @@ async function testRemoveFromCart () {
   }
 }
 
+async function deleteCart(){
+  try{
+    console.log("Grabbing carts before deletion:", await getAllCarts())
+    await destroyCart(1)
+    console.log("Grabbing carts after deletion:", await getAllCarts())
+  }catch(error){
+    throw error
+  }
+}
+
 async function buildDB() {
   try {
     // need to add something here
@@ -223,11 +278,14 @@ async function buildDB() {
     await dropTables();
     await createTables();
     await createInitialProducts();
+    await testDeleteProduct();
     await createInitialUsers();
     await createInitialReviews();
     await createInitialCarts();
     await testAddToCart();
     await testRemoveFromCart();
+    await testDeleteReview();
+    await deleteCart();
   }
   catch (ex) {
     console.log('Error building the DB')
