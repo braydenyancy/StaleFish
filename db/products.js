@@ -68,12 +68,39 @@ async function getProductById(id) {
   }
 }
 
+async function updateProduct({id, ...fields}) {
+  
+  const setString = Object.keys(fields).map(
+    (key, index) => `"${ key }"=$${ index + 1 }`
+  ).join(', ');
+
+  if (setString.length === 0) {
+    return;
+  }
+
+  try {
+    if (setString.length > 0) {
+      await client.query(`
+        UPDATE products
+        SET ${ setString }
+        WHERE id=${ id }
+        RETURNING *;
+      `, Object.values(fields));
+    }
+
+    return await getProductById(id);
+  } catch (error) {
+    throw error;
+  }
+
+}
+
 async function destroyProduct(id) {
   try {
 
     const { rows } = await client.query(`
     DELETE from products
-    WHERE products.id=$1
+    WHERE id=$1
     RETURNING *;
   `, [id]);
     
@@ -87,5 +114,6 @@ module.exports = {
   createProduct,
   getProductById,
   getAllProducts,
+  updateProduct,
   destroyProduct,
 }

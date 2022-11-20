@@ -1,7 +1,7 @@
 const { client } = require('./')
 
 const { createProduct, getAllProducts, getProductById, destroyProduct } = require('./products')
-const { createUser } = require('./users')
+const { createUser, getUserById } = require('./users')
 const { createReview, getReviewById, getAllReviews, destroyReview } = require('./reviews')
 const { createCart, addToCart, getCartById, removeFromCart, getAllCarts, destroyCart } = require('./cart')
 
@@ -59,7 +59,8 @@ async function createTables() {
         description TEXT NOT NULL, 
         rating INTEGER NOT NULL,
         CHECK (rating BETWEEN 1 and 5),
-        "productId" INTEGER REFERENCES products(id)
+        "productId" INTEGER REFERENCES products(id),
+        "userId" INTEGER REFERENCES users(id)
       );  
   `);
 
@@ -176,19 +177,22 @@ async function createInitialReviews() {
       name: "Review 1",
       description: "Review Description 1",
       rating: 1,
-      productId: productTest1.id
+      productId: productTest1.id,
+      userId: 1
     })
     const review2 = await createReview({
       name: "Review 2",
       description: "Review Description 2",
       rating: 2,
-      productId: productTest2.id
+      productId: productTest2.id,
+      userId: 2
     })
     const review3 = await createReview({
       name: "Review 3",
       description: "Review Description 3",
       rating: 5,
-      productId: productTest3.id
+      productId: productTest3.id,
+      userId: 3
     });
     console.log("Finished creating reviews")
     console.log("Reviews created:")
