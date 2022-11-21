@@ -5,10 +5,11 @@ const jwt = require('jsonwebtoken')
 const { getUserById } = require('../db/users.js')
 
 apiRouter.get('/health', (req, res, next) => {
+
     try {
-        let response = {message: 'all is well'}
+        let response = { message: 'all is well' }
         res.send(response)
-  
+
     } catch (error) {
         console.error
         throw error
@@ -17,24 +18,32 @@ apiRouter.get('/health', (req, res, next) => {
 });
 
 apiRouter.use(async (req, res, next) => {
+
     const prefix = 'Bearer ';
     const auth = req.header('Authorization');
 
-    if(!auth) {
+    if (!auth) {
+
         next();
-    } else if(auth.startsWith(prefix)) {
+
+    } else if (auth.startsWith(prefix)) {
+
         const token = auth.slice(prefix.length)
-    
+
         try {
-            const {id} = jwt.verify(token, JWT_SECRET)
+
+            const { id } = jwt.verify(token, JWT_SECRET)
             if (id) {
+
                 req.user = await getUserById(id);
                 console.log(req.user)
                 next();
             }
-        } catch ({name, message}) {
-            next({name, message})
+
+        } catch ({ name, message }) {
+            next({ name, message })
         }
+
     } else {
         next({
             name: 'AuthorizationHeaderError',
@@ -44,7 +53,8 @@ apiRouter.use(async (req, res, next) => {
 })
 
 apiRouter.use((req, res, next) => {
-    if (req.user){
+
+    if (req.user) {
         console.log('user is set:', req.user)
     }
     next()
@@ -65,9 +75,10 @@ apiRouter.use('/users', usersRouter);
 const cartRouter = require('./cartRouter');
 apiRouter.use('/cart', cartRouter);
 
-apiRouter.use("*", async(req ,res)=>{
+apiRouter.use("*", async (req, res) => {
     await res.status(404).send({
-        message: 'Not a valid url'})
+        message: 'Not a valid url'
+    })
 });
 
 apiRouter.use((error, req, res, next) => {
