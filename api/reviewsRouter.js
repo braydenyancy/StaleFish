@@ -1,43 +1,46 @@
 const express = require('express');
 const reviewsRouter = express.Router();
-const { createReview, getAllReviews, getReviewById, getReviewByProductId, getReviewByUserId, destroyReview } = require('../db/reviews');
-const { requireAdmin, requireUser } = require("./utils");
+const { createReview, getAllReviews, getReviewById, getReviewByProductId, destroyReview } = require('../db/reviews');
+const { requireUser } = require("./utils");
 
 reviewsRouter.get('/', async (req, res, next) => {
+
   try {
+
     const reviews = await getAllReviews();
     res.send(reviews)
+
   } catch (error) {
     next(error)
   }
 });
 
 reviewsRouter.get("/:productId", async (req, res, next) => {
-    
+
   const { productId } = req.params
 
   try {
-  
-      const review = await getReviewByProductId(productId)
-  
 
-  
-          res.send(review)
+    const review = await getReviewByProductId(productId)
+    res.send(review)
 
   } catch (error) {
-      res.send({
-          error: "error",
-          message: "Requested review was not found",
-          name: "ReviewNotFoundError"
-      })
+
+    res.send({
+      error: "error",
+      message: "Requested review was not found",
+      name: "ReviewNotFoundError"
+    })
   }
 })
 
 reviewsRouter.post("/", requireUser, async (req, res, next) => {
+
   const { name, description, rating, productId } = req.body;
   const review = {};
 
   try {
+
     review.name = name;
     review.description = description;
     review.rating = rating;
@@ -52,17 +55,21 @@ reviewsRouter.post("/", requireUser, async (req, res, next) => {
     throw (error)
   }
 });
+
 reviewsRouter.delete("/:id", requireUser, async (req, res, next) => {
+
   try {
+
     const review = await getReviewById(req.params.id)
 
     if (review && review.userId === req.user.id) {
-      const deletedReview = await destroyReview(req.params.id);
 
+      const deletedReview = await destroyReview(req.params.id);
       res.send(deletedReview);
+
     } else {
-      // if there was a post, throw UnauthorizedUserError, otherwise throw PostNotFoundError
-      next(review ? { 
+
+      next(review ? {
         name: "UnauthorizedUserError",
         message: "You cannot delete a review which is not yours"
       } : {
@@ -70,7 +77,9 @@ reviewsRouter.delete("/:id", requireUser, async (req, res, next) => {
         message: "That review does not exist"
       });
     }
+
   } catch (error) {
+
     res.send({
       name: "Delete Product",
       message: "Failure to delete product",

@@ -2,13 +2,14 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 const bcrypt = require('bcrypt');
-const {createUser, addToCart, getUserById, getUserByUsername} = require('../db/users');
-const { requireUser, requireAdmin } = require('./utils')
+const { createUser, getUserById, getUserByUsername } = require('../db/users');
+const { requireUser } = require('./utils')
 
 const usersRouter = express.Router();
 
 usersRouter.post('/register', async (req, res, next) => {
-  const { username, password, birthday } = req.body;
+
+    const { username, password, birthday } = req.body;
 
     try {
 
@@ -29,12 +30,13 @@ usersRouter.post('/register', async (req, res, next) => {
                 error: "error",
             })
         }
+
         if (birthday.length = 0) {
-          res.send({
-            name: "Birthday Error",
-            message: "Please submit a valid birthday",
-            error: "error",
-          })
+            res.send({
+                name: "Birthday Error",
+                message: "Please submit a valid birthday",
+                error: "error",
+            })
         }
 
         const user = await createUser({
@@ -43,10 +45,9 @@ usersRouter.post('/register', async (req, res, next) => {
             birthday,
             admin
         });
-        console.log(user.id)
-        console.log(user)
-        console.log(username)
+
         const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET);
+
         res.send({
             message: "thank you for signing up",
             token,
@@ -60,63 +61,58 @@ usersRouter.post('/register', async (req, res, next) => {
 
 usersRouter.post('/login', async (req, res, next) => {
 
-  const { username, password } = req.body;
+    const { username, password } = req.body;
 
-  if (!username || !password) {
-      next({
-          name: "MissingCredentialsError",
-          message: "Please supply both a username and password"
-      });
-  }
+    if (!username || !password) {
+        next({
+            name: "MissingCredentialsError",
+            message: "Please supply both a username and password"
+        });
+    }
 
-  try {
+    try {
 
-      const user = await getUserByUsername(username);
+        const user = await getUserByUsername(username);
+        const hashedPassword = user.password;
+        const isValid = await bcrypt.compare(password, hashedPassword)
 
-      const hashedPassword = user.password;
-      const isValid = await bcrypt.compare(password, hashedPassword)
+        if (user && isValid) {
 
-      if (user && isValid) {
+            const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET, { expiresIn: '1w' });
+            res.send({ message: "you're logged in!", user, token });
 
-          const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET,{expiresIn:'1w'});
-          res.send({ message: "you're logged in!", user, token });
+        } else {
+            next({
+                name: 'IncorrectCredentialsError',
+                message: 'Username or password is incorrect'
+            });
+        }
 
-      } else {
-          next({
-              name: 'IncorrectCredentialsError',
-              message: 'Username or password is incorrect'
-          });
-      }
-
-  } catch (error) {
-      console.log(error);
-      next(error);
-
-  }
-
+    } catch (error) {
+        next(error);
+    }
 });
 
 usersRouter.get("/me", requireUser, async (req, res, next) => {
-  const prefix = "Bearer ";
-  const auth = req.header("Authorization");
-  try {
-       if (auth.startsWith(prefix)) {
-          const token = auth.slice(prefix.length)
-          const { id } = jwt.verify(token, JWT_SECRET);
 
-          if (id) {
-              req.user = await getUserById(id);
-              res.send(req.user);
-          }
-          
-      } else {res.status(401)}
-  }
-  catch (error) {
-      next(error);
-      
-  }
+    const prefix = "Bearer ";
+    const auth = req.header("Authorization");
+
+    try {
+        if (auth.startsWith(prefix)) {
+
+            const token = auth.slice(prefix.length)
+            const { id } = jwt.verify(token, JWT_SECRET);
+
+            if (id) {
+                req.user = await getUserById(id);
+                res.send(req.user);
+            }
+        } else { res.status(401) }
+    }
+    catch (error) {
+        next(error);
+    }
 });
-
-// GET users/cart
 
 module.exports = usersRouter;
