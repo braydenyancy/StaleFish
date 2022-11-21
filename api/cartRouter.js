@@ -6,7 +6,7 @@ const { requireUser } = require("./utils");
 cartRouter.get("/:userId", requireUser, async (req, res, next) => {
 
   const { userId } = req.params
-
+  
   try {
 
     const cart = await getCartByUserId(userId)
