@@ -5,7 +5,7 @@ async function createCart(userId, productIds) {
   if (!userId) {
     userId = null
   }
-
+  
   try {
     const { rows: [cart] } = await client.query(`
           INSERT INTO carts ("userId", "productIds") 
