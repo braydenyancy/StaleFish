@@ -10,7 +10,6 @@ async function dropTables() {
 
   await client.query(`
     DROP TABLE IF EXISTS reviews;
-    DROP TABLE IF EXISTS orders;
     DROP TABLE IF EXISTS carts;
     DROP TABLE IF EXISTS products;
     DROP TABLE IF EXISTS users;
@@ -47,12 +46,6 @@ async function createTables() {
         "userId" INTEGER REFERENCES users(id),
         "productIds" INTEGER ARRAY
       );
-      CREATE TABLE orders (
-        id SERIAL PRIMARY KEY,
-        name varchar(255) NOT NULL,
-        address varchar(255) NOT NULL, 
-        price DECIMAL(19,3) NOT NULL
-        );
       CREATE TABLE reviews (
         id SERIAL PRIMARY KEY,
         name varchar(255) NOT NULL,
@@ -214,66 +207,66 @@ async function testDeleteReview() {
   }
 }
 
-async function createInitialCarts() {
-  console.log("Creating initial carts...")
-  try {
-    const cartOne = await createCart(2, [1])
-    const cartTwo = await createCart(1, [2])
-    const cartThree = await createCart(3, [3])
-    const cartFour = await createCart(null, [1])
-    console.log(cartOne, cartTwo, cartThree, cartFour)
-  } catch (error) {
-    throw error
-  }
-}
+// async function createInitialCarts() {
+//   console.log("Creating initial carts...")
+//   try {
+//     const cartOne = await createCart(2, [1])
+//     const cartTwo = await createCart(1, [2])
+//     const cartThree = await createCart(3, [3])
+//     const cartFour = await createCart(null, [1])
+//     console.log(cartOne, cartTwo, cartThree, cartFour)
+//   } catch (error) {
+//     throw error
+//   }
+// }
 
 
-async function testAddToCart () {
-  console.log("Testing add to cart function...")
-  try {
-  //  const test1 =  await getCartById(2)
-  //  console.log("First test:", test1)
-    const newTestCart = await addToCart(2, 3)
-    const anotherNewTestCart = await addToCart(2, 4)
-    // const test2 =  await getCartById(2)
-    // console.log("Second test:", test2)
-    // console.log(newTestCart)
-    console.log(newTestCart)
-    console.log(anotherNewTestCart)
-  }catch (error) {
-    throw error
-  }
-}
+// async function testAddToCart () {
+//   console.log("Testing add to cart function...")
+//   try {
+//   //  const test1 =  await getCartById(2)
+//   //  console.log("First test:", test1)
+//     const newTestCart = await addToCart(2, 3)
+//     const anotherNewTestCart = await addToCart(2, 4)
+//     // const test2 =  await getCartById(2)
+//     // console.log("Second test:", test2)
+//     // console.log(newTestCart)
+//     console.log(newTestCart)
+//     console.log(anotherNewTestCart)
+//   }catch (error) {
+//     throw error
+//   }
+// }
 
-async function testRemoveFromCart () {
-  console.log("Testing remove from cart function...")
-  try {
-  //  const test1 =  await getCartById(2)
-  //  console.log("First test:", test1)
-    const newTestCart = await addToCart(2, 3)
-    console.log("Test products added:", newTestCart)
-    const newTestCartRemove = await removeFromCart(2, 3)
-    console.log("Test products removed:", newTestCartRemove)
-    // const anotherNewTestCart = await addToCart(2, 4)
-    // const test2 =  await getCartById(2)
-    // console.log("Second test:", test2)
-    // console.log(newTestCart)
-    // console.log(newTestCart)
-    // console.log(anotherNewTestCart)
-  }catch (error) {
-    throw error
-  }
-}
+// async function testRemoveFromCart () {
+//   console.log("Testing remove from cart function...")
+//   try {
+//   //  const test1 =  await getCartById(2)
+//   //  console.log("First test:", test1)
+//     const newTestCart = await addToCart(2, 3)
+//     console.log("Test products added:", newTestCart)
+//     const newTestCartRemove = await removeFromCart(2, 3)
+//     console.log("Test products removed:", newTestCartRemove)
+//     // const anotherNewTestCart = await addToCart(2, 4)
+//     // const test2 =  await getCartById(2)
+//     // console.log("Second test:", test2)
+//     // console.log(newTestCart)
+//     // console.log(newTestCart)
+//     // console.log(anotherNewTestCart)
+//   }catch (error) {
+//     throw error
+//   }
+// }
 
-async function deleteCart(){
-  try{
-    console.log("Grabbing carts before deletion:", await getAllCarts())
-    await destroyCart(1)
-    console.log("Grabbing carts after deletion:", await getAllCarts())
-  }catch(error){
-    throw error
-  }
-}
+// async function deleteCart(){
+//   try{
+//     console.log("Grabbing carts before deletion:", await getAllCarts())
+//     await destroyCart(1)
+//     console.log("Grabbing carts after deletion:", await getAllCarts())
+//   }catch(error){
+//     throw error
+//   }
+// }
 
 async function buildDB() {
   try {
@@ -285,11 +278,11 @@ async function buildDB() {
     await testDeleteProduct();
     await createInitialUsers();
     await createInitialReviews();
-    await createInitialCarts();
-    await testAddToCart();
-    await testRemoveFromCart();
-    await testDeleteReview();
-    await deleteCart();
+    // await createInitialCarts();
+    // await testAddToCart();
+    // await testRemoveFromCart();
+    // await testDeleteReview();
+    // await deleteCart();
   }
   catch (ex) {
     console.log('Error building the DB')

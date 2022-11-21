@@ -21,4 +21,7 @@ function requireAdmin(req, res, next) {
 
 for sorting by type --- filter for product.type
 
-weird user thing with id nums
+notes for Grant:
+ - carts for logged in users are tied to getCartbyUserId API call
+ - For the frontend, plan is to have carts for guests stored in localstorage
+ - cart consists of an array of productIds - can use getProductById to display them

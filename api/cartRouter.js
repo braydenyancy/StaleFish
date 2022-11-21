@@ -1,6 +1,6 @@
 const express = require('express');
 const cartRouter = express.Router();
-const { createCart, getCartByUserId, getCartById } = require('../db/cart');
+const { createCart, getCartByUserId, updateCart, destroyCart } = require('../db/cart');
 const { requireAdmin, requireUser } = require("./utils");
 
 cartRouter.get("/:userId", requireUser, async (req, res, next) => {
@@ -8,7 +8,7 @@ cartRouter.get("/:userId", requireUser, async (req, res, next) => {
   const { userId } = req.params
 
   try {
-  
+    
       const cart = await getCartByUserId(userId)
   
 
@@ -42,6 +42,55 @@ cartRouter.post('/', async (req, res, next) => {
 
   } catch (error) {
     throw (error)
+  }
+})
+
+cartRouter.patch("/", async (req, res, next) => {
+
+  // const { userId } = req.params;
+  const { productIds } = req.body;
+  const cart = {};
+
+  try {
+    // const newProduct = await getProductById(id);
+  
+    cart.userId = req.user.id
+    cart.productIds = productIds
+
+
+    const updatedCart = await updateCart(cart)
+    res.send(updatedCart)
+
+
+  } catch (error) {
+    next(error)
+  }
+})
+
+cartRouter.delete("/:userId", requireUser, async (req, res, next) => {
+  try {
+    const cart = await getCartByUserId(req.params.userId)
+
+    if (cart && cart.userId === req.user.id) {
+      const deletedCart = await destroyCart(req.params.userId);
+
+      res.send(deletedCart);
+    } else {
+      // if there was a post, throw UnauthorizedUserError, otherwise throw PostNotFoundError
+      next(cart ? { 
+        name: "UnauthorizedUserError",
+        message: "You cannot delete a cart which is not yours"
+      } : {
+        name: "PostNotFoundError",
+        message: "That cart does not exist"
+      });
+    }
+  } catch (error) {
+    res.send({
+      name: "Delete Cart",
+      message: "Failure to delete cart",
+      error
+    })
   }
 })
 
