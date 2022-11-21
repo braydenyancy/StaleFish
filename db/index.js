@@ -6,5 +6,5 @@ const client = new Client({
   connectionString: DATABASE_URL,
   database: "graceShopper"
 })
-
+  
 module.exports = { client }
