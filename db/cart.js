@@ -139,14 +139,41 @@ async function removeFromCart(userId, newProductId) {
   }
 }
 
-async function destroyCart(id) {
+async function updateCart({userId, ...fields}) {
+  
+  const setString = Object.keys(fields).map(
+    (key, index) => `"${ key }"=$${ index + 1 }`
+  ).join(', ');
+
+  if (setString.length === 0) {
+    return;
+  }
+
+  try {
+    if (setString.length > 0) {
+      await client.query(`
+        UPDATE carts
+        SET ${ setString }
+        WHERE "userId"=${ userId }
+        RETURNING *;
+      `, Object.values(fields));
+    }
+
+    return await getCartByUserId(userId);
+  } catch (error) {
+    throw error;
+  }
+
+}
+
+async function destroyCart(userId) {
   try {
 
     const { rows } = await client.query(`
     DELETE from carts
-    WHERE id=$1
+    WHERE "userId"=$1
     RETURNING *;
-  `, [id]);
+  `, [userId]);
     
     return rows;
   } catch (error) {
@@ -154,4 +181,4 @@ async function destroyCart(id) {
   }
 }
 
-module.exports = { createCart, getCartById, getCartByUserId, getAllCarts, destroyCart, addToCart, removeFromCart }
+module.exports = { createCart, getCartById, getCartByUserId, getAllCarts, destroyCart, addToCart, removeFromCart, updateCart }
