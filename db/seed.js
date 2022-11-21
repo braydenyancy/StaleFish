@@ -1,9 +1,9 @@
 const { client } = require('./')
 
-const { createProduct, getAllProducts, getProductById } = require('./products')
-const { createUser } = require('./users')
-const { createReview } = require('./reviews')
-const { createCart, addToCart, getCartById, removeFromCart } = require('./cart')
+const { createProduct, getAllProducts, getProductById, destroyProduct } = require('./products')
+const { createUser, getUserById } = require('./users')
+const { createReview, getReviewById, getAllReviews, destroyReview } = require('./reviews')
+const { createCart, addToCart, getCartById, removeFromCart, getAllCarts, destroyCart } = require('./cart')
 
 async function dropTables() {
   console.log("Dropping All Tables...")
@@ -59,7 +59,8 @@ async function createTables() {
         description TEXT NOT NULL, 
         rating INTEGER NOT NULL,
         CHECK (rating BETWEEN 1 and 5),
-        "productId" INTEGER REFERENCES products(id)
+        "productId" INTEGER REFERENCES products(id),
+        "userId" INTEGER REFERENCES users(id)
       );  
   `);
 
@@ -115,6 +116,39 @@ async function createInitialProducts() {
   }
 }
 
+async function testDeleteProduct() {
+  try{
+    console.log('Creating Test Products for deletion:')
+    const testProduct1 = await createProduct({
+      title:
+        "The first most amazing test product",
+      description:
+        "Description for the first most amazing product ever....",
+      type:
+        "Product Type 1",
+      price:
+        100
+
+    });
+
+    const testProduct2 = await createProduct({
+      title:
+        "The second most amazing test product",
+      description:
+        "Description for the second most amazing product ever....",
+      type:
+        "Product Type 2",
+      price:
+        200
+    });
+    console.log("Grabbing products before deletion:", await getAllProducts())
+    await destroyProduct(5)
+    console.log("Grabbing products after deletion:", await getAllProducts())
+  } catch(error){
+    throw error
+  }
+}
+
 async function createInitialUsers() {
   console.log("Creating initial users...")
   try {
@@ -143,25 +177,39 @@ async function createInitialReviews() {
       name: "Review 1",
       description: "Review Description 1",
       rating: 1,
-      productId: productTest1.id
+      productId: productTest1.id,
+      userId: 1
     })
     const review2 = await createReview({
       name: "Review 2",
       description: "Review Description 2",
       rating: 2,
-      productId: productTest2.id
+      productId: productTest2.id,
+      userId: 2
     })
     const review3 = await createReview({
       name: "Review 3",
       description: "Review Description 3",
       rating: 5,
-      productId: productTest3.id
+      productId: productTest3.id,
+      userId: 3
     });
     console.log("Finished creating reviews")
     console.log("Reviews created:")
     console.log(review1, review2, review3)
   } catch (error) {
     console.error("Error creating initial reviews")
+    throw error
+  }
+}
+
+async function testDeleteReview() {
+  try{
+
+    console.log("Grabbing reviews before deletion:", await getAllReviews())
+    await destroyReview(3)
+    console.log("Grabbing reviews after deletion:", await getAllReviews())
+  } catch(error){
     throw error
   }
 }
@@ -178,6 +226,7 @@ async function createInitialCarts() {
     throw error
   }
 }
+
 
 async function testAddToCart () {
   console.log("Testing add to cart function...")
@@ -216,6 +265,16 @@ async function testRemoveFromCart () {
   }
 }
 
+async function deleteCart(){
+  try{
+    console.log("Grabbing carts before deletion:", await getAllCarts())
+    await destroyCart(1)
+    console.log("Grabbing carts after deletion:", await getAllCarts())
+  }catch(error){
+    throw error
+  }
+}
+
 async function buildDB() {
   try {
     // need to add something here
@@ -223,11 +282,14 @@ async function buildDB() {
     await dropTables();
     await createTables();
     await createInitialProducts();
+    await testDeleteProduct();
     await createInitialUsers();
     await createInitialReviews();
     await createInitialCarts();
     await testAddToCart();
     await testRemoveFromCart();
+    await testDeleteReview();
+    await deleteCart();
   }
   catch (ex) {
     console.log('Error building the DB')

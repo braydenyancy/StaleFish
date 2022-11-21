@@ -2,7 +2,7 @@ const express = require('express');
 const apiRouter = express.Router();
 const { JWT_SECRET } = process.env
 const jwt = require('jsonwebtoken')
-const { getUserById } = require('../db')
+const { getUserById } = require('../db/users.js')
 
 apiRouter.get('/health', (req, res, next) => {
     try {
@@ -29,6 +29,7 @@ apiRouter.use(async (req, res, next) => {
             const {id} = jwt.verify(token, JWT_SECRET)
             if (id) {
                 req.user = await getUserById(id);
+                console.log(req.user)
                 next();
             }
         } catch ({name, message}) {
@@ -64,18 +65,17 @@ apiRouter.use('/users', usersRouter);
 const cartRouter = require('./cartRouter');
 apiRouter.use('/cart', cartRouter);
 
+apiRouter.use("*", async(req ,res)=>{
+    await res.status(404).send({
+        message: 'Not a valid url'})
+});
 
 apiRouter.use((error, req, res, next) => {
     res.send({
         name: error.name,
         message: error.message,
         error: error.error
-    })
-})
-
-apiRouter.use("/unknown", async(req ,res)=>{
-    await res.status(404).send({
-        message: 'Not a valid url'})
-})
+    });
+});
 
 module.exports = apiRouter;

@@ -1,13 +1,21 @@
 
 
-deleteProduct DB !!!
-deleteReview DB !!!
-deleteCart DB !!!
 finish productRouter
 finish cartRouter
 finish reviewsRouter
 
 
+function requireAdmin(req, res, next) {
+    if (!req.user.admin) {
+        res.status(401);
+        next({
+            error:
+            name:
+            message:
+        })
+    }
+    next()
+}
 
 
 
